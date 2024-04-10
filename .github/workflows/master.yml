@@ -18,10 +18,12 @@ jobs:
         run: chmod -R 775 storage
       - name: Install Dependencies
         run: composer update --ignore-platform-reqs
+      - name: clear cache
+        run: php artisan optimizer:clear
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
           server: ${{ secrets.SERVER }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          server-dir: /ci-cd-test.shakilahmeed.com/
+          server-dir: ./ci-cd-test.shakilahmeed.com/
