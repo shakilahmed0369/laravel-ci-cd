@@ -1,31 +1,33 @@
-name: 🚀 Deploy website on push
+name: Deploy Files
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches:
+      - master
+  # Enables manually triggering of Workflow with file synchronization option
+  workflow_dispatch:
+    inputs:
+      sync:
+        description: "File synchronization"
+        required: true
+        default: "delta"
 
 jobs:
-  web-deploy:
-    name: Deploying
+  deploy-master:
+    name: "master branch"
+    if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-        with:
-          php-version: '8.3.3'
-      - name: 🚚 Get latest code
+      - name: "Checkout"
         uses: actions/checkout@v4
-      - name: Directory Permissions
-        run: chmod -R 775 storage
-      # - name: Install Dependencies
-      #   run: composer update --ignore-platform-reqs
-      # - name: clear cache
-      #   run: php artisan optimize:clear
-      - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.SERVER }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          # server-dir: ./ci-cd-test.shakilahmeed.com/
+          fetch-depth: 0
+      - name: "Deploy"
+        uses: milanmk/actions-file-deployer@master
+        with:
+          remote-protocol: "sftp"
+          remote-host: ${{ secrets.SERVER }}
+          remote-user: ${{ secrets.USERNAME }}
+          ssh-private-key: ${{ secrets.PASSWORD }}
+          # remote-path: "/var/www/example.com"
