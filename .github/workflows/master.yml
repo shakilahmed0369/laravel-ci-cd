@@ -1,7 +1,17 @@
-- name: 'Deploy to UAT'
-  uses: januszmarcinik/ftp-deploy@v1
-  with:
-    server: ${{ secrets.SERVER }}
-    user: ${{ secrets.USERNAME }}
-    password: ${{ secrets.PASSWORD }}
-    # localRoot: web/dist
+name: CI -> Deploy to My website
+on:
+  push:
+    branches: [ main, development ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Here is the deployment action
+      - name: Upload from public_html via FTP
+        uses: airvzxf/ftp-deployment-action@latest
+        with:
+          server: ${{ secrets.SERVER }}
+          user: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          # local_dir: "./public_html"
